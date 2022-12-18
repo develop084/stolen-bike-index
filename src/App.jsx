@@ -6,7 +6,7 @@ import Header from "./components/Header";
 import BikeCard from "./components/BikeCard";
 import ReactPaginate from "react-paginate";
 import { Spinner, Button } from "@chakra-ui/react";
-import SearchBar from "./components/SearchBar";
+
 import moment from "moment";
 const { RangePicker } = DatePicker;
 
@@ -58,7 +58,7 @@ function App() {
     const getBikes = async () => {
       setLoading(true);
       const response = await fetch(
-        "https://bikeindex.org:443/api/v3/search?page=1&per_page=100&location=IP&distance=1000&stolenness=stolen"
+        "https://bikeindex.org:443/api/v3/search?page=1&per_page=100&location=IP&distance=10&stolenness=stolen"
       );
       const data = await response.json();
 
@@ -72,6 +72,12 @@ function App() {
 
   let temp = [];
   function test() {
+    if(dates[0] === ''){
+      return
+    }
+    if(searchTerm.length ==0){
+      return
+    }
     stolenBikes.filter((single) => {
       if (
         moment(single.date_stolen * 1000).format("YYYY-MM-DD") >= dates[0] &&
@@ -109,6 +115,8 @@ function App() {
   return (
     <div className="App">
       <Header />
+
+      <div style={{display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center', marginTop: 20}}>
       <Space>
         <Input
           placeholder="Search Case Descriptions"
@@ -119,7 +127,7 @@ function App() {
         <RangePicker onChange={(date, dateString) => setdates(dateString)} />
       </Space>
       <Button onClick={test}>Search</Button>
-
+      </div>
       {/* filter by dates */}
 
       <p className="total-cases">Total cases : {stolenBikes.length}</p>
