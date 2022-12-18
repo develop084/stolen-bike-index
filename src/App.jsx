@@ -128,7 +128,9 @@ function App() {
       <p className="total-cases">Total cases : {stolenBikes.length}</p>
 
       {loading ? (
-        <p>Loading....</p>
+         <p style={{textAlign : 'center'}}>
+          <Spinner/>
+        </p>
       ) : displayCases.length == 0 ? (
         <p style={{ color: "red" }}>No result Found</p>
       ) : (
