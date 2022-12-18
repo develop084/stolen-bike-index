@@ -1,25 +1,43 @@
 import react, { useState, useEffect } from "react";
-import { DatePicker, Space,Input } from 'antd';
+import { Space, Input } from "antd";
+import { DatePicker } from "antd";
 import "./App.css";
-import SearchBar from "./components/SearchBar";
 import Header from "./components/Header";
 import BikeCard from "./components/BikeCard";
 import ReactPaginate from "react-paginate";
+import { Spinner, Button } from "@chakra-ui/react";
+import SearchBar from "./components/SearchBar";
+import moment from "moment";
+const { RangePicker } = DatePicker;
 
 function App() {
   const [stolenBikes, setStolenBikes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [dates, setdates] = useState([]);
+
+  // state for the search term
 
   // state for the pagination
   const [pageNumber, setPageNumber] = useState(0);
+
   const casesPerPage = 10;
 
   const pagesVisited = pageNumber * casesPerPage;
 
   const displayCases = stolenBikes
     .slice(pagesVisited, pagesVisited + casesPerPage)
+    .filter((val) => {
+      if (searchTerm == "") {
+        return val;
+      } else if (val.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return val;
+      }
+    })
     .map((item) => {
       return (
         <BikeCard
+          key={item.id}
           title={item.title || "Title Not Found"}
           description={item.description || "Description Not Found"}
           dateStolen={
@@ -38,34 +56,82 @@ function App() {
 
   useEffect(() => {
     const getBikes = async () => {
+      setLoading(true);
       const response = await fetch(
-        "https://bikeindex.org:443/api/v3/search?stolenness=stolen"
+        "https://bikeindex.org:443/api/v3/search?page=1&per_page=100&location=IP&distance=1000&stolenness=stolen"
       );
       const data = await response.json();
-      setStolenBikes(data.bikes);
+
       console.log(data.bikes);
+      setStolenBikes(data.bikes);
+      setLoading(false);
     };
 
     getBikes();
-  }, []);
+  }, [dates]);
+
+  let temp = [];
+  function test() {
+    stolenBikes.filter((single) => {
+      if (
+        moment(single.date_stolen * 1000).format("YYYY-MM-DD") >= dates[0] &&
+        moment(single.date_stolen * 1000).format("YYYY-MM-DD") <= dates[1]
+      ) {
+        temp.push(single);
+      }
+    });
+    setStolenBikes(temp);
+  }
+
+  // const dateFilterCase = stolenBikes
+  //   .map((item) => {
+  //     if (!item) {
+  //       return item;
+  //     } else if (
+  //       filterItem.includes(
+  //         moment(item.date_stolen * 1000).format("YYYY-MM-DD")
+  //       )
+  //     ) {
+  //       return item;
+  //     }
+  //   })
 
   const pageCount = Math.ceil(stolenBikes.length / casesPerPage);
 
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
-const searchTitle =(e)=> {
-  displayCases.filter(e.target.value )
-}
+
+  // range picker
+
+  console.log(dates);
+
   return (
     <div className="App">
       <Header />
       <Space>
-        <Input placeholder="Search Case Descriptions" onChange={searchTitle} />
-        </Space>
-      <SearchBar />
+        <Input
+          placeholder="Search Case Descriptions"
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Space>
+      <Space>
+        <RangePicker onChange={(date, dateString) => setdates(dateString)} />
+      </Space>
+      <Button onClick={test}>Search</Button>
+
+      {/* filter by dates */}
+
       <p className="total-cases">Total cases : {stolenBikes.length}</p>
-      {displayCases}
+
+      {loading ? (
+        <p>Loading....</p>
+      ) : displayCases.length == 0 ? (
+        <p style={{ color: "red" }}>No result Found</p>
+      ) : (
+        displayCases
+      )}
+
       <div className="paginate-keys">
         <ReactPaginate
           previousLabel={"Prev"}
