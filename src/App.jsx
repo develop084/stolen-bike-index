@@ -132,7 +132,7 @@ function App() {
           <Spinner/>
         </p>
       ) : displayCases.length == 0 ? (
-        <p style={{ color: "red" }}>No result Found</p>
+        <p style={{ color: "red", textAlign: 'center', marginBottom: '100px' }}>No result Found</p>
       ) : (
         displayCases
       )}
