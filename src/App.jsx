@@ -11,7 +11,7 @@ import moment from "moment";
 const { RangePicker } = DatePicker;
 
 function App() {
-  const [stolenBikes, setStolenBikes] = useState([]);
+  let [stolenBikes, setStolenBikes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [dates, setdates] = useState([]);
@@ -58,7 +58,7 @@ function App() {
     const getBikes = async () => {
       setLoading(true);
       const response = await fetch(
-        "https://bikeindex.org:443/api/v3/search?page=1&per_page=100&location=IP&distance=10&stolenness=stolen"
+        "https://bikeindex.org:443/api/v3/search?page=1&per_page=100&location=10405&distance=100&stolenness=stolen"
       );
       const data = await response.json();
 
@@ -72,12 +72,10 @@ function App() {
 
   let temp = [];
   function test() {
-    if(dates[0] === ''){
-      return
-    }
-    if(searchTerm.length ==0){
-      return
-    }
+   if(dates[0] === "" && dates[1] === "" ){
+    return
+   }
+   else{
     stolenBikes.filter((single) => {
       if (
         moment(single.date_stolen * 1000).format("YYYY-MM-DD") >= dates[0] &&
@@ -86,8 +84,10 @@ function App() {
         temp.push(single);
       }
     });
-    setStolenBikes(temp);
+   
   }
+  setStolenBikes(temp);
+}
 
   // const dateFilterCase = stolenBikes
   //   .map((item) => {
@@ -126,7 +126,7 @@ function App() {
       <Space>
         <RangePicker onChange={(date, dateString) => setdates(dateString)} />
       </Space>
-      <Button onClick={test}>Search</Button>
+      <Button onClick={test}>Find Cases</Button>
       </div>
       {/* filter by dates */}
 
