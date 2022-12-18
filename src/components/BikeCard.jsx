@@ -34,7 +34,7 @@ function BikeCard({
           objectFit="cover"
           maxW={{ base: "100%", sm: "200px" }}
           src={thumb}
-          alt="Caffe Latte"
+          alt="thumb"
         />
 
         <Stack>

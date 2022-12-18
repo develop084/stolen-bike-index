@@ -72,35 +72,20 @@ function App() {
 
   let temp = [];
   function test() {
-   if(dates[0] === "" && dates[1] === "" ){
-    return
-   }
-   else{
-    stolenBikes.filter((single) => {
-      if (
-        moment(single.date_stolen * 1000).format("YYYY-MM-DD") >= dates[0] &&
-        moment(single.date_stolen * 1000).format("YYYY-MM-DD") <= dates[1]
-      ) {
-        temp.push(single);
-      }
-    });
-   
+    if (dates[0] === "" && dates[1] === "") {
+      return;
+    } else {
+      stolenBikes.filter((single) => {
+        if (
+          moment(single.date_stolen * 1000).format("YYYY-MM-DD") >= dates[0] &&
+          moment(single.date_stolen * 1000).format("YYYY-MM-DD") <= dates[1]
+        ) {
+          temp.push(single);
+        }
+      });
+    }
+    setStolenBikes(temp);
   }
-  setStolenBikes(temp);
-}
-
-  // const dateFilterCase = stolenBikes
-  //   .map((item) => {
-  //     if (!item) {
-  //       return item;
-  //     } else if (
-  //       filterItem.includes(
-  //         moment(item.date_stolen * 1000).format("YYYY-MM-DD")
-  //       )
-  //     ) {
-  //       return item;
-  //     }
-  //   })
 
   const pageCount = Math.ceil(stolenBikes.length / casesPerPage);
 
@@ -116,20 +101,30 @@ function App() {
     <div className="App">
       <Header />
 
-      <div style={{display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center', marginTop: 20}}>
-      <Space>
-        <Input
-          placeholder="Search Case Descriptions"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </Space>
-      <Space>
-        <RangePicker onChange={(date, dateString) => setdates(dateString)} />
-      </Space>
-      <Button onClick={test}>Find Cases</Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 10,
+          alignItems: "center",
+          marginTop: 20,
+        }}
+      >
+        {/* search input */}
+        <Space>
+          <Input
+            placeholder="Search Case Descriptions"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Space>
+        {/* filter by date picker  */}
+        <Space>
+          <RangePicker onChange={(date, dateString) => setdates(dateString)} />
+        </Space>
+        <Button onClick={test}>Find Cases</Button>
       </div>
-      {/* filter by dates */}
 
+      {/* total cases number  */}
       <p className="total-cases">Total cases : {stolenBikes.length}</p>
 
       {loading ? (
@@ -139,7 +134,7 @@ function App() {
       ) : (
         displayCases
       )}
-
+      {/* pagination */}
       <div className="paginate-keys">
         <ReactPaginate
           previousLabel={"Prev"}
@@ -150,6 +145,7 @@ function App() {
           previousLinkClassName={"prevpageBtn"}
           nextLinkClassName={"nextpageBtn"}
           activeClassName={"paginationActive"}
+          initialPage={ 1 }
         />
       </div>
     </div>
